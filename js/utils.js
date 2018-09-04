@@ -1,10 +1,10 @@
-module.exports = {
+export default {
     toString: function(data){
         return (typeof data === Object) ? JSON.stringify(data) : new Error('Parameter passed is not a JSON object');
     },
 
     toJson: function(data){
-        return (typeof data === String) ? JSON.parse(data) : new Error('Parameter passed is not a string');
+        return (typeof data === "string") ? JSON.parse(data) : null;
     },
 
     setItem: function(key, value){
@@ -33,18 +33,19 @@ module.exports = {
         }
     },
 
-    getInstanceName: function(eventRef) {
-        var tempRefName = "";
-        if (typeof eventRef == "object") {
-            tempRefName = eventRef._name;
-        }
-        else {
-            var tempRef = new eventRef();
-            tempRefName = tempRef._name;
-        }
-        return tempRefName;
-    },
+    getCollisionRect: function(game, gameObj){
+        var AssetName = gameObj.getAsset();
+        var gameObjImage = game.loadedAssets.images[AssetName];
+        var collisionRect = {
+            left: gameObj.mapX + game.width / 2,
+            right: gameObj.mapX + gameObjImage.width + game.width / 2,
+            top: gameObj.mapY + gameObjImage.height - 5 + game.height / 2,
+            bottom: gameObj.mapY + gameObjImage.height + game.height / 2
+        };
 
+        return collisionRect;
+    },
+    
     math: {
          /**
          * Linear Interpolation

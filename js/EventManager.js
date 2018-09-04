@@ -1,51 +1,67 @@
-import utils from './utils';
-
-export default class EventManager {
-    constructor() {
-        this.registeredEventListeners = [];
-        this.firedEvents = [];
-    }
-
-    on(event, handler, target) {
-        if (!target) {
-            target = arguments.callee.caller;
-        }
-
-        var name = typeof event == 'string' ? event : utils.getInstanceName(event);
-
-        // check if event already exists
-        if (!registeredEventListeners[name]) {
-            registeredEventListeners[name] = [];
-        }
-        //register event
-        registeredEventListeners[name].push({handler: handler, target: target});
-    }
-
-    fire(event){
-        var name = typeof event == 'string' ? event : utils.getInstanceName(event);
-
-        var listeners = this.getListeners(name);
-
-        for(var i = 0; i < listeners.length; i++){
-            listeners[i].handler.call(listeners[i].target, event);
-            firedEvents[name].push({handler: handler, target: listeners[i].target});
-        }
-    }
+/**
+ * Manages all evnets in the game
+ */
+export default {
+    registeredEventListeners: [],
+    firedEvents: [],
 
     /**
-     * @param Object event
+     * Registers an event 
+     * @param {String} event 
+     * @param {Function} handler 
+     * @param {Object} target 
+     * @returns void
      */
-    getListeners(event) {
-        var name = typeof event == 'string' ? event: utils.getInstanceName(event);
-        if (!registeredEventListeners[name]) {
-            registeredEventListeners[name] = [];
+    on: function(event, handler, target) {
+        // if (!target) {
+        //     target = arguments.callee.caller;
+        // }
+        // check if event already exists
+        if (!this.registeredEventListeners[event]) {
+            this.registeredEventListeners[event] = [];
         }
+        //register event
+        this.registeredEventListeners[event].push({handler: handler, target: target});
+    },
 
-        return registeredEventListeners[name];
-    }
+    /**
+     * Calls/Fires a registered event
+     * @param {String} event 
+     */
+    fire: function(event){
+        try{
+            // get all listeners for that event
+            var listeners = this.getListeners(event);
+            console.log('Event: '+event);
+            // lop through and call them **
+            for(var i = 0; i < listeners.length; i++){
+                var listener = listeners[i].target;
+                // console.log("calling " + listeners[i].handler);
+                listeners[i].handler.call(listener);
+                // this.firedEvents[event].push({handler: listeners[i].handler, target: listeners[i].target});
+            }
+        }catch(e){
+            console.log("Event not fired. "+ e);
+        }
+    },
 
-    reset(){
-        registeredEventListeners = [];
-        firedEvents = [];
+    /**
+     * 
+     * @param {String} event
+     * @returns Array
+     */
+    getListeners: function(event) {
+        if (!this.registeredEventListeners[event]) {
+            this.registeredEventListeners[event] = [];
+        }
+        return this.registeredEventListeners[event];
+    },
+
+    /**
+     * Reset all trackers for listeners and fired events
+     */
+    reset: function(){
+        this.registeredEventListeners = [];
+        this.firedEvents = [];
     }
 };

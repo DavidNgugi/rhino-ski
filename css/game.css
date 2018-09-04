@@ -18,7 +18,7 @@ html, body {
 .canvas-container{
     width: 100%;
     height: auto;
-    position: absolute;
+    position: relative;
     z-index: 1;
 }
 
@@ -68,19 +68,18 @@ a:hover, a:focus, a:active {
 }
 
 canvas{
-    z-index: 1 !important;
+    z-index: 2 !important;
+    position: absolute;
 }
 
-.pause{
-    color: white;
-    padding-top: 5px;
-    float: right;
-    margin-top: -77% !important;
-    margin-right: 10px;
-    opacity: 0.6;
-    /* display: none; */
-    position: relative !important;
-    z-index: 2 !important;
+.timer{
+    margin-top: 40%;
+    margin-left: 48%;
+    color: #B30D5D;
+    font-size: 5em;
+    position: absolute !important;
+    z-index: 100 !important;
+    display: none;
 }
 
 #content{

@@ -45,19 +45,6 @@ $(document).ready(function() {
         audio: {}
     };
 
-    // Assets that have been loaded already
-    // var loadedAssets = { images: [], audio: [] };
-
-    // obstacles
-    var obstacles = {
-        types: [
-            'tree',
-            'treeCluster',
-            'rock1',
-            'rock2'
-        ]
-    };
-
     var Rhino = {
         mapX: 0,
         mapY: 0,
@@ -84,12 +71,12 @@ $(document).ready(function() {
          * @return void
          */
         reset: function(){
-            this.direction = 5;
-            this.mapX = 0;
-            this.mapY = 0;
-            this.speed = 8;
-            this.isMoving = false;
-            this.hasCollided = false;
+            Skier.direction = 5;
+            Skier.mapX = 0;
+            Skier.mapY = 0;
+            Skier.speed = 8;
+            Skier.isMoving = false;
+            Skier.hasCollided = false;
         },
 
         /**
@@ -133,16 +120,26 @@ $(document).ready(function() {
         },
 
         onMoveUp: function(){
-            // this.mapY-= this.speed;
-            this.speed -= 0.5;
-            this.isMoving = false;
-            this.mapY += this.speed;
+            // prevent moving backwards and ensuring speed is maintained
+            if(this.speed > 1){
+                this.speed -= 0.5;
+                this.isMoving = false;
+                this.mapY += this.speed;
+            }
         },
 
         onMoveDown: function(){
+            // check speed, accelerate on decent
+            if(this.speed < 8){
+                this.speed++;
+            }
             this.direction = 3;
             this.mapY += this.speed;
-        }
+        },
+
+        onJump: function(){
+
+        },
 
     };
 
@@ -153,7 +150,7 @@ $(document).ready(function() {
         },
 
         toJson: function(data){
-            return (typeof data === String) ? JSON.parse(data) : null;
+            return (typeof data === 'string') ? JSON.parse(data) : null;
         },
 
         setItem: function(key, value){
@@ -183,8 +180,8 @@ $(document).ready(function() {
         },
 
         getCollisionRect: function(game, gameObj){
-            var AssetName = gameObj.asset;
-            var gameObjImage = game.oadedAssets.images[AssetName];
+            var AssetName = gameObj.getAsset();
+            var gameObjImage = game.loadedAssets.images[AssetName];
             var collisionRect = {
                 left: gameObj.mapX + game.width / 2,
                 right: gameObj.mapX + gameObjImage.width + game.width / 2,
@@ -210,25 +207,39 @@ $(document).ready(function() {
 
     // set all game events enum. values are arbitrary
     var Event = {
-        SHOW_MENU: 'SHOW_MENU',
-        HIDE_MENU: 'HIDE_MENU',
-        GAME_STARTED: 'GAME_STARTED',
-        GAME_PAUSED: 'GAME_PAUSED',
-        GAME_RESUMED: 'GAME_RESUMED',
-        GAME_OVER: 'GAME_OVER',
-        GAME_QUIT: 'GAME_QUIT',
-        KEY_LEFT: 'KEY_LEFT',
-        KEY_RIGHT: 'KEY_RIGHT',
-        KEY_DOWN: 'KEY_DOWN',
-        KEY_UP: 'KEY_UP'
+        START_GAMELOOP  : 'START_GAMELOOP',
+        STOP_GAMELOOP   : 'STOP_GAMELOOP',
+        SHOW_MENU       : 'SHOW_MENU',
+        MENU_PLAY       : 'MENU_PLAY',
+        HIDE_MENU       : 'HIDE_MENU',
+        GAME_READY      : 'GAME_READY',
+        GAME_STARTED    : 'GAME_STARTED',
+        GAME_PAUSED     : 'GAME_PAUSED',
+        GAME_RESUMED    : 'GAME_RESUMED',
+        GAME_OVER       : 'GAME_OVER',
+        GAME_QUIT       : 'GAME_QUIT',
+        RESET_GAME      : 'RESET_GAME',
+        RESET_SKIER     : 'RESET_SKIER',
+        RESET_RHINO     : 'RESET_RHINO',
+        RESET_STORAGE   : 'RESET_STORAGE',
+        KEY_LEFT        : 'KEY_LEFT',
+        KEY_RIGHT       : 'KEY_RIGHT',
+        KEY_DOWN        : 'KEY_DOWN',
+        KEY_UP          : 'KEY_UP'
     };
 
     var registeredEventListeners = [], 
         firedEvents = [];
 
     var EventManager = {
+         /**
+         * Registers an event 
+         * @param {String} event 
+         * @param {Function} handler 
+         * @param {Object} target 
+         * @returns void
+         */
         on: function(event, handler, target) {
-            // console.log(handler);
             if (!target) {
                 target = arguments.callee.caller;
             }
@@ -241,9 +252,6 @@ $(document).ready(function() {
         },
 
         fire: function(event){
-            // var name = typeof event == 'string' ? event : utils.getInstanceName(event);
-
-            // console.log(registeredEventListeners[event]);
             var listeners = this.getListeners(event);
             
             for(var i = 0; i < listeners.length; i++){
@@ -257,7 +265,6 @@ $(document).ready(function() {
          * @param Object event
          */
         getListeners: function(event) {
-            // var name = typeof event == 'string' ? event: utils.getInstanceName(event);
             if (!registeredEventListeners[event]) {
                 registeredEventListeners[event] = [];
             }
@@ -277,7 +284,7 @@ $(document).ready(function() {
      * @return {Promise}
      */
     var loadAssets = function() {
-        var assetPromises = { images: [], audio: []};
+        var assetPromises = [];
 
         // var context = this;
 
@@ -301,7 +308,7 @@ $(document).ready(function() {
             };
             assetImage.src = asset;
             loaded++;
-            assetPromises.images.push(assetDeferred.promise());
+            assetPromises.push(assetDeferred.promise());
         });
 
         if(assets.audio.length > 0){
@@ -318,16 +325,17 @@ $(document).ready(function() {
                 };
                 assetAudio.src = asset;
                 loaded++;
-                assetPromises.audio.push(assetDeferred.promise());
+                assetPromises.push(assetDeferred.promise());
             });
         }
-
-        console.log("Loaded "+ loaded + " Assets so far");
         return $.when.apply($, assetPromises);
     }
 
     // collision detector
-    var collisionDetector = {
+    var CollisionDetector = {
+        // keep in memory nearby obstacles
+        nearbyObstacles: [],
+        radiusOfCollision: 50,
         /**
          * Checks for collisions between the skier and obstacles
          * @param {Object} skier
@@ -336,9 +344,24 @@ $(document).ready(function() {
         checkIfSkierHitObstacle: function(Game, player) {
             var playerRect = utils.getCollisionRect(Game, player);
 
+            // filter to nearby obstacles and keep in memory to reduce CPU calc
+            // this.nearbyObstacles = _.filter(Game.obstacles, function(obstacle){
+            //     var distX = player.mapX - obstacle.x, 
+            //         distY = player.mapY - obstacle.y;
+            //     return ( distX <= this.radiusOfCollision) && (distY <= this.radiusOfCollision);
+            // });
+
+            // console.log(`Nearby obstacles ${this.nearbyObstacles.length}`);
+
+            //  // sort by nearest obstacles
+            // _.orderBy(this.nearbyObstacles, ['x','y'], ['asc', 'asc']);
+
+            // console.log(this.nearbyObstacles);
+
             var that = this;
-            _.find(obstacles, function(obstacle) {
-                var obstacleImage = Game.loadedAssets[obstacle.type];
+            // iterate and check for collisions
+            var collision = _.find(Game.obstacles, function(obstacle) {
+                var obstacleImage = Game.loadedAssets.images[obstacle.type];
                 var obstacleRect = {
                     left: obstacle.x,
                     right: obstacle.x + obstacleImage.width,
@@ -348,6 +371,18 @@ $(document).ready(function() {
 
                 return that.intersectRect(playerRect, obstacleRect);
             });
+
+            if(collision) {
+                console.log('Player has collided!');
+                player.direction = 0;
+                player.isMoving = false;
+                player.hasCollided = true;
+                EventManager.fire(Event.GAME_OVER);
+            }else{
+                if(player.isMoving) { 
+                    Game.score += 0.5;
+                }
+            }
         },
 
         checkIfSkierCapturedByEnemy: function(Game, player, rhino){
@@ -365,11 +400,6 @@ $(document).ready(function() {
         }
     };
 
-    // draw Game Objects
-    // var drawGameObjects = function(){
-
-    // };
-
     // draw Player Object 
     var drawGameObject = function(player){
         var playerAssetName = player.getAsset();
@@ -385,12 +415,14 @@ $(document).ready(function() {
         // highscore stuff
         highscore: {
             set: function(value){
-                utils.setItem('ceros_highscore', value);
+                var highscore = this.get();
+                if(highscore == null){
+                    highscore = [];
+                }
+                highscore.push(value);
+                utils.setItem('ceros_highscore', JSON.stringify(highscore));
             },
             get: function(){
-                return utils.getItem('ceros_highscore');
-            },
-            getJson: function(){
                 return utils.toJson(utils.getItem('ceros_highscore'));
             }
         },
@@ -418,84 +450,98 @@ $(document).ready(function() {
     // main game instance
     var Game = {
         ctx: null,
-        state: { 'started': false, 'paused': false, 'resumed': false, 'gameOver': false},
         width: window.innerWidth,
         height: window.innerHeight,
         obstacleTypes: ['tree', 'treeCluster', 'rock1', 'rock2'],
         obstacles: [],
-        loadedAssets: { images: [], audio: [] },
+        loadedAssets: { images: {}, audio: {} },
         score: 0,
-        getCurrentState: function(){
-            var currentState;
-            for(var state in Game.state){
-                if(Game.state[state])
-                    currentState = state;
-            }
-            
-            return (currentState !== undefined) ? currentState : 'started';
+        onShowMenu: function(){
+            $('.game-ui, .game-start-menu').show();
         },
-        onMenuShow: function(){
-            
+        onMenuPlay: function(){
+            reset();
+            $('.game-ui').hide();
+            $('canvas').remove();
+            $('.canvas-container').show();
              // show game menu
-            var canvas = $('<canvas></canvas>')
+            var canvas = Game.createCanvas();
+
+            $('body .canvas-container').append(canvas);
+
+            Game.createContext(canvas);
+
+            EventManager.fire(Event.GAME_READY)
+        },
+        createCanvas: function(){
+            return $('<canvas></canvas>')
              .attr('width', Game.width * window.devicePixelRatio)
              .attr('height', Game.height * window.devicePixelRatio)
              .css({
                  width: Game.width + 'px',
                  height: Game.height + 'px',
-                 'z-index': '1 !important'
+                 'z-index': '2 !important',
+                 'position': 'relative'
              });
-
-            // var pause_button = $("<button></button>")
-            //     .attr('class', 'pause button')
-            //     .attr('width', 200 * window.devicePixelRatio)
-            //     .attr('height', 100 * window.devicePixelRatio)
-            //     .css({
-            //         'position': 'absolute !important',
-            //         'z-index': '2 !important'
-            //     })
-            //     .html('Pause Game');
-
-            $('body .canvas-container').append(canvas);
-            // $('body .canvas-container').append(pause_button);
-
-            Game.createContext(canvas);
-
-            // console.log(Game);
-
-            EventManager.fire(Event.GAME_READY)
         },
-        onReady: function(){
-            // console.log(assets)
-            
+        onReady: function(){   
+            // Load assets and start the game         
             loadAssets().then(function() {
                 EventManager.fire(Event.GAME_STARTED)
             });
         },
         onStart: function(){
-            reset();
-            setupKeyhandler();
             Game.placeInitialObstacles();
-            requestAnimationFrame(gameLoop);
+            animFrame = requestAnimationFrame(gameLoop);
+        },
+        saveGame: function(){
+             // save game to localStorage
+             Storage.highscore.set(Math.round(Game.score));
+             // store game state
+             Storage.game.set({'game': Game, 'skier': Skier, 'rhino': Rhino});
         },
         onPaused: function(){
-            // save game to localStorage
-            Storage.highscore.set(Math.round(Game.score));
-            // store game state
-            Storage.game.set({'game': Game, 'skier': Skier, 'rhino': Rhino});
+           Game.saveGame();
+           Game.state.paused = true;
+           window.cancelAnimationFrame(animFrame);
             // show menu
-            // pauseAndShowPausedGameUI();
+            $('.canvas-container, .game-start-menu, .game-over-screen').hide();
+            $('.game-ui, .game-pause-menu').show();
         },
         onResumed: function(){
             $('.game-ui').hide();
+            $('.canvas-container').show();
+            Game.state.paused = false;
+
+            var timeLeft = 5;
+            var timer = setInterval(() => {
+                $('.timer').show();
+                $('.timer').html(timeLeft);
+                if(timeLeft == 0){
+                    clearInterval(timer);
+                    $('.timer').hide();
+                    animFrame = requestAnimationFrame(gameLoop);
+                }
+                timeLeft--;
+            }, 1000);
         },
         onGameOver: function(){
-
+            Game.saveGame();
+            window.cancelAnimationFrame(animFrame);
+            $('canvas').remove();
+            // show Game Over screen
+            $('#score').html(Game.score + " metres");
+            $('.game-start-menu, .game-pause-menu').hide();
+            $('.game-ui, .game-over-screen').show();
+            reset();
         },
         onQuit: function(){
-            reset();
-            $('.game-pause-menu').hide();
+            Game.saveGame();
+            window.cancelAnimationFrame(animFrame);
+            $('canvas').remove();
+            $('.game-pause-menu, .game-over-screen, .canvas-container').hide();
             $('.game-start-menu').show();
+            reset();
         },
         /**
          * Resets all state properties to their default false
@@ -653,7 +699,7 @@ $(document).ready(function() {
 
             var that = this;
             _.each(this.obstacles, function(obstacle) {
-                var obstacleImage = this.loadedAssets.images[obstacle.type];
+                var obstacleImage = that.loadedAssets.images[obstacle.type];
                 var x = obstacle.x - skier.mapX - obstacleImage.width / 2;
                 var y = obstacle.y - skier.mapY - obstacleImage.height / 2;
 
@@ -672,27 +718,22 @@ $(document).ready(function() {
          * Resets properties to default
          * @return void
          */
-        reset: () => {
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
+        reset: function(){
+            // this.ctx = null; 
+            // this.width = window.innerWidth;
+            // this.height = window.innerHeight;
             this.loadedAssets = { images: {}, audio: {} };
             this.obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
             this.obstacles = [];
-            this.state = { 'started': false, 'paused': false, 'resumed': false, 'gameOver': false};
-            this.score= 0;
+            this.score = 0;
         }
     };
 
-    // create canvas
-    var createCanvas = function(width, height) {
-        var canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        return canvas;
-    };
+    var animFrame = null;
 
     // reset game
     var reset = function(){
+        animFrame = null;
         Storage.game.clear();
         Game.reset();
         Skier.reset();
@@ -711,11 +752,9 @@ $(document).ready(function() {
         Game.clearCanvas();
 
         // draw relevant stuff
-        // Skier.move();
+        Skier.move();
 
-        // check for collisions
-        // collisionDetector.checkIfSkierHitObstacle(Game, Skier);
-        // collisionDetector.checkIfSkierCapturedByEnemy(Game, Skier, Rhino);
+        Game.placeNewObstacle(Skier);
 
         // draw highscore
         drawHighScore();
@@ -723,11 +762,21 @@ $(document).ready(function() {
         // draw skier
         drawGameObject(Skier);
 
+        // drawGameObject(Rhino);
+        
+        Game.drawObstacles(Skier);
+
+        // check for collisions
+        CollisionDetector.checkIfSkierHitObstacle(Game, Skier);
+        // CollisionDetector.checkIfSkierCapturedByEnemy(Game, Skier, Rhino);
+
         // restore ctx
         Game.ctx.restore();
 
         // update game
-        requestAnimationFrame(gameLoop);
+        if(animFrame != null && Game.state.paused == false){
+            animFrame = requestAnimationFrame(gameLoop);
+        }
     };
 
     /**
@@ -737,8 +786,7 @@ $(document).ready(function() {
      */
     var setupKeyhandler = function(){
         $(document).keydown(function(event) {
-            // var now = Date.now();
-            // delta = (now - then)/10000;
+
             Skier.isMoving = true;
 
             event.preventDefault();
@@ -756,6 +804,9 @@ $(document).ready(function() {
                 case 40: // down
                     EventManager.fire(Event.KEY_DOWN);
                     break;
+                case 80:
+                    EventManager.fire(Event.GAME_PAUSED);
+                    break;
             }
         });
     };
@@ -764,18 +815,22 @@ $(document).ready(function() {
      * Game Event Listeners registration
      */
     var registerEvents = function(){
-        EventManager.on(Event.SHOW_MENU, Game.onMenuShow);
+        EventManager.on(Event.RESET_GAME, Game.onReset);
+        EventManager.on(Event.RESET_SKIER, Skier.reset);
+        EventManager.on(Event.RESET_Rhino, Rhino.reset);
+        EventManager.on(Event.RESET_STORAGE, Storage.game.clear);
+        EventManager.on(Event.SHOW_MENU, Game.onShowMenu);
+        EventManager.on(Event.MENU_PLAY, Game.onMenuPlay);
         EventManager.on(Event.GAME_READY, Game.onReady);
         EventManager.on(Event.GAME_STARTED, Game.onStart);
         EventManager.on(Event.GAME_PAUSED, Game.onPaused);
         EventManager.on(Event.GAME_RESUMED, Game.onResumed);
         EventManager.on(Event.GAME_OVER, Game.onGameOver);
         EventManager.on(Event.GAME_QUIT, Game.onQuit);
-
-        EventManager.on(Event.KEY_LEFT, Skier.onMoveLeft, Skier);
-        EventManager.on(Event.KEY_RIGHT, Skier.onMoveRight, Skier);
-        EventManager.on(Event.KEY_DOWN, Skier.onMoveDown, Skier);
-        EventManager.on(Event.KEY_UP, Skier.onMoveUp, Skier);
+        EventManager.on(Event.KEY_LEFT, Skier.onMoveLeft);
+        EventManager.on(Event.KEY_RIGHT, Skier.onMoveRight);
+        EventManager.on(Event.KEY_DOWN, Skier.onMoveDown);
+        EventManager.on(Event.KEY_UP, Skier.onMoveUp);
     };
 
     /**
@@ -784,14 +839,11 @@ $(document).ready(function() {
 
     // Play/New Game
     $('.play').on('click', function(e){
-        $('.game-ui').hide();
-        EventManager.fire(Event.SHOW_MENU);
+        EventManager.fire(Event.MENU_PLAY);
     });
 
     // Resume Game
     $('#resume').on('click', function(e){
-        // var then = Date.now();
-        // resumeGame(then);
         EventManager.fire(Event.GAME_RESUMED);
     });
 
@@ -815,8 +867,7 @@ $(document).ready(function() {
     // View High Scores
     $('#highscore').on('click', function(e){
         $('.game-start-menu').hide();
-        var highscores = Storage.highscore.getJson();
-        // console.log(highscores);
+        var highscores = Storage.highscore.get();
         if(highscores != undefined || highscores != null){
             $('#highscores li').remove();
             highscores.sort(((a,b) => { return b-a;})).forEach((highscore) => {
@@ -825,24 +876,15 @@ $(document).ready(function() {
         }
         $('.highscore-screen').show();
     });
-
       
-    // setup game
+    /**
+     * Setup the game
+     */
     var setup = function(){
-         // check game state before initializing anything else
-        if(Game.getCurrentState() === 'started'){
-            console.log('not started. fire away then');
-            $('.game-ui, .game-start-menu').show();
-            EventManager.fire(Event.SHOW_MENU);
-        }else if(Game.getCurrentState() === 'paused'){
-            // pauseAndShowPausedGameUI();
-            EventManager.fire(Event.GAME_PAUSED);
-        }else{
-            // gameOver();
-            EventManager.fire(Event.GAME_OVER);
-        }
-        
-        registerEvents();      
+        // register all game events first
+        registerEvents();  
+        EventManager.fire(Event.SHOW_MENU);
+        setupKeyhandler();
     };
 
     setup();

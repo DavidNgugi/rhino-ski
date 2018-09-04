@@ -3,7 +3,7 @@ import utils from './utils';
 /**
  * The enemy component
  */
-export default class Skier {
+export default class Rhino {
 
     constructor(){
         this.direction = 5;

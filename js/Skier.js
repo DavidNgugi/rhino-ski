@@ -3,74 +3,37 @@ import utils from './utils';
 /**
  * The player component
  */
-export default class Skier {
+var Skier = {
+    direction: 5,
+    mapX: 0,
+    mapY: 0,
+    speed: 8,
+    isMoving: false,
+    hasCollided: false,
+    assets: ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight'],
 
-    constructor(){
-        this.direction = 5;
-        this.mapX = 0;
-        this.mapY = 0;
-        this.speed = 8;
-        this.isMoving = false;
-        this.hasCollided = false;
-        this.assets = [
-            'skierCrash',
-            'skierLeft', 
-            'skierLeftDown', 
-            'skierDown', 
-            'skierRightDown', 
-            'skierRight',
-            'skierJump1',
-            'skierJump2',
-            'skierJump3',
-            'skierJump4',
-            'skierJump5'
-        ];
-
-        this.jumpSequence = [
-            'skierJump1',
-            'skierJump2',
-            'skierJump3',
-            'skierJump4',
-            'skierJump5'
-        ];
-
-        this.jumpTime = 1000;
-    }
+    getAsset(){
+        return this.assets[this.direction];
+    },
 
     /**
      * Resets properties to default
      * @return void
      */
-    reset(){
+    reset: function(){
         this.direction = 5;
         this.mapX = 0;
         this.mapY = 0;
         this.speed = 8;
         this.isMoving = false;
         this.hasCollided = false;
-    }
+    },
 
     /**
-     * Gets position vector
-     * @return {object}
-     */
-    get position(){
-        return { x : this.mapX, y : this.mapY };
-    }
-
-    /**
-     * Gets specific asset based on the direction this is facing
-     * @return {string}
-     */
-    get asset(){        
-        return this.assets[this.direction];
-    }
-
-     /**
-     * Moves the skier according to the direction
+     * Moves the skier according to the direction and places new objects on the map
      * @return void
      */
-    move() {
+    move: function() {
         var dt = 1;
         switch(this.direction) {
             case 2:
@@ -86,46 +49,48 @@ export default class Skier {
                 break;
 
         }
-    }
+    },
 
-    onMoveLeft(event){
+    onMoveLeft: function(){
         if(this.direction === 0)
             this.direction = 1;
         else
             this.direction = 2;
         
             this.mapX += this.speed;
-    }
+    },
 
-    onMoveRight(event){
+    onMoveRight: function(){
         if(this.direction === 0)
             this.direction = 5;
         else
             this.direction = 4;
 
         this.mapX += this.speed;
-    }
+    },
 
-    onMoveUp(event){
-        // this.mapY-= this.speed;
-        this.speed -= 0.5;
-        this.isMoving = false;
-        this.mapY += this.speed;
-    }
+    onMoveUp: function(){
+        // prevent moving backwards and ensuring speed is maintained
+        if(this.speed > 1){
+            this.speed -= 0.5;
+            this.isMoving = false;
+            this.mapY += this.speed;
+        }
+    },
 
-    onMoveDown(event){
+    onMoveDown: function(){
+        // check speed, accelerate on decent
+        if(this.speed < 8){
+            this.speed++;
+        }
         this.direction = 3;
         this.mapY += this.speed;
-    }
+    },
 
-    onJump(event){
-        this.animateJump();
-    }
+    onJump: function(){
 
-    animateJump(){
-        setTimeout(() => {
-            //jump 
-        }, this.jumpTime);
-    }
+    },
 
-}
+};
+
+module.exports = Skier;

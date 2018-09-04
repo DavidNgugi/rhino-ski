@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <script type="text/javascript" src="js/refactor.js"></script>
+    <script type="text/javascript" src="build/bundle.js"></script>
 
 </head>
 <body>
@@ -42,7 +42,7 @@
         <div class="game-pause-menu">
             <div class="col-md-6 col-md-offset-3">
                 <ul class="nav nav-vertical">
-                    <li><a href="javascript:void(0)" class="play button">Start New Game</a></li>
+                    <li><a href="javascript:void(0)" class="play button">Restart</a></li>
                     <li><a href="javascript:void(0)" id = "resume" class="button">Resume Game</a></li>
                     <li><a href="javascript:void(0)" id = "quit" class="button">Quit Game</a></li>
                 </ul>
@@ -78,9 +78,9 @@
     
     <!-- CANVAS-CONTAINER -->
     <div class="canvas-container">
-        
+        <!-- ./CANVAS-CONTAINER -->
+        <div class="timer text-center"></div>
     </div>
-    <!-- ./CANVAS-CONTAINER -->
-
+    
 </body>
 </html>
