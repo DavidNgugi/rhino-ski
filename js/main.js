@@ -7,8 +7,6 @@ import CollisionDetector from './CollisionDetector';
 import Skier from './Skier';
 // import Rhino from './Rhino';
 
-import $ from 'jquery';
-
 // Ensure compatibility across browsers
 var requestAnimationFrame = (function () {
     return window.requestAnimationFrame ||
@@ -75,7 +73,7 @@ $(document).ready(function () {
 
         // check for collisions
         CollisionDetector.checkIfSkierHitObstacle(game, Skier);
-        
+
         // CollisionDetector.checkIfSkierCapturedByEnemy(game, Skier, Rhino);
 
         // restore ctx
