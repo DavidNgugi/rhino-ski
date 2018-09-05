@@ -64,14 +64,14 @@ describe('Event Manager', () => {
             EventManager.reset();
         });
 
-        it("Should throw and error when attempting to fire unregistered event", (done) => {
+        it("Should throw and error when attempting to dispatch unregistered event", (done) => {
             
-            expect(EventManager.fire).to.throw('Event not fired');
+            expect(EventManager.dispatch).to.throw('Event not dispatched');
 
             done();
         });
 
-        it("Should fire a Registered event", (done) => {
+        it("Should dispatch a Registered event", (done) => {
             var testEvent = 'TEST:EVENT',
                 handler = (e) => {result = true},
                 result = false,
@@ -79,7 +79,7 @@ describe('Event Manager', () => {
 
             EventManager.on(testEvent, handler, target);
 
-            EventManager.fire(testEvent);
+            EventManager.dispatch(testEvent);
 
             assert.equal(result, true);
 

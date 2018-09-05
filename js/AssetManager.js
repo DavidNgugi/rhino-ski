@@ -1,3 +1,4 @@
+import $ from 'jquery';
 /**
  * Stores the path to all game assets
  */
@@ -62,7 +63,7 @@ export default {
 
      /**
      * Asynchronously Load each asset from Asset Store 
-     * @return {Promise}
+    //  * @return {Promise}
      */
     loadAssets: function() {
         var assetPromises = [];
@@ -74,7 +75,7 @@ export default {
         var context = this;
 
         // load images
-        _.each(this.assets.images, function(asset, assetName) {
+         _.each(this.assets.images, function(asset, assetName) {
 
             var assetImage = new Image();
             var assetDeferred = new $.Deferred();
@@ -93,7 +94,7 @@ export default {
 
         if(this.assets.audio.length > 0){
             // load the audio too
-            _.each(this.assets.audio, function(asset, assetName) {
+             _.each(this.assets.audio, function(asset, assetName) {
 
                 var assetAudio = new Audio();
                 var assetDeferred = new $.Deferred();
@@ -104,11 +105,10 @@ export default {
                     assetDeferred.resolve();
                 };
                 assetAudio.src = asset;
-                laoded++;
+                loaded++;
                 assetPromises.push(assetDeferred.promise());
             });
         }
-
         return $.when.apply($, assetPromises);
     }
 }

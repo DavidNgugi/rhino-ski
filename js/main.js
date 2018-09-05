@@ -7,6 +7,8 @@ import CollisionDetector from './CollisionDetector';
 import Skier from './Skier';
 // import Rhino from './Rhino';
 
+import $ from 'jquery';
+
 // Ensure compatibility across browsers
 var requestAnimationFrame = (function () {
     return window.requestAnimationFrame ||
@@ -23,7 +25,7 @@ $(document).ready(function () {
 
     var animFrame = null;
 
-    var game = new Game();
+    var game = new Game(window.innerWidth, window.innerHeight);
 
     var onStartGameLoop = function () {
         animFrame = requestAnimationFrame(gameLoop);
@@ -31,6 +33,10 @@ $(document).ready(function () {
 
     var onStopGameLoop = function () {
         window.cancelAnimationFrame(animFrame);
+    };
+
+    var onAddScore = function(){
+        game.score += 0.5;
     };
 
     var foundRamp = function () {
@@ -69,6 +75,7 @@ $(document).ready(function () {
 
         // check for collisions
         CollisionDetector.checkIfSkierHitObstacle(game, Skier);
+        
         // CollisionDetector.checkIfSkierCapturedByEnemy(game, Skier, Rhino);
 
         // restore ctx
@@ -103,6 +110,7 @@ $(document).ready(function () {
         EventManager.on(Event.GAME_QUIT, game.onQuit, game);
         EventManager.on(Event.FOUND_RAMP, foundRamp, this);
         EventManager.on(Event.PLAYER_JUMP, Skier.onJump, Skier);
+        EventManager.on(Event.ADD_SCORE, onAddScore, this);
 
         EventManager.on(Event.KEY_LEFT, Skier.onMoveLeft, Skier);
         EventManager.on(Event.KEY_RIGHT, Skier.onMoveRight, Skier);
@@ -115,23 +123,23 @@ $(document).ready(function () {
     */
     // Play/New Game
     $('.play').on('click', function (e) {
-        EventManager.fire(Event.MENU_PLAY);
+        EventManager.dispatch(Event.MENU_PLAY);
     });
 
     // Resume Game
     $('#resume').on('click', function (e) {
-        EventManager.fire(Event.GAME_RESUMED);
+        EventManager.dispatch(Event.GAME_RESUMED);
     });
 
     // Pause Game
     $('.pause').on('click', function (e) {
         e.preventDefault();
-        EventManager.fire(Event.GAME_PAUSED);
+        EventManager.dispatch(Event.GAME_PAUSED);
     });
 
     // Quit game
     $("#quit").on('click', function (e) {
-        EventManager.fire(Event.GAME_QUIT);
+        EventManager.dispatch(Event.GAME_QUIT);
     });
 
     // Go Back to Main Menu
@@ -162,30 +170,32 @@ $(document).ready(function () {
     var setupKeyHandler = function () {
         $(document).keydown(function (event) {
 
-            Skier.isMoving = true;
-
             event.preventDefault();
+
+            if(event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40){
+                Skier.isMoving = true;
+            }
 
             switch (event.which) {
                 case 37: // left
-                    EventManager.fire(Event.KEY_LEFT);
+                    EventManager.dispatch(Event.KEY_LEFT);
                     break;
                 case 39: // right
-                    EventManager.fire(Event.KEY_RIGHT);
+                    EventManager.dispatch(Event.KEY_RIGHT);
                     break;
                 case 38: // up
-                    EventManager.fire(Event.KEY_UP);
+                    EventManager.dispatch(Event.KEY_UP);
                     break;
                 case 40: // down
-                    EventManager.fire(Event.KEY_DOWN);
+                    EventManager.dispatch(Event.KEY_DOWN);
                     break;
                 case 80:
                     if (!game.state.pause) {
-                        EventManager.fire(Event.GAME_PAUSED);
+                        EventManager.dispatch(Event.GAME_PAUSED);
                     }
                     break;
                 case 32:
-                    EventManager.fire(Event.PLAYER_JUMP);
+                    EventManager.dispatch(Event.PLAYER_JUMP);
                     break;
             }
         });
@@ -196,7 +206,7 @@ $(document).ready(function () {
      */
     var setup = function () {
         registerEvents();
-        EventManager.fire(Event.SHOW_MENU);
+        EventManager.dispatch(Event.SHOW_MENU);
         setupKeyHandler();
     };
 

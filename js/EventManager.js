@@ -20,6 +20,7 @@ export default {
         // if (!target) {
         //     target = arguments.callee.caller;
         // }
+        
         // check if event already exists
         if (!this.registeredEventListeners[event]) {
             this.registeredEventListeners[event] = [];
@@ -33,7 +34,7 @@ export default {
      * Calls/Fires a registered event
      * @param {String} event 
      */
-    fire: function(event){
+    dispatch: function(event){
         try{
             // get all listeners for that event
             var listeners = this.getListeners(event);
@@ -47,7 +48,7 @@ export default {
             }
         }catch(e){
             // console.log("Event not fired. "+ e);
-            throw new Error("Event not fired");
+            throw new Error("Event not dispatched");
         }
     },
 

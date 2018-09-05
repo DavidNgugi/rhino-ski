@@ -3,12 +3,13 @@ import EventManager from './EventManager';
 import AssetManager from './AssetManager';
 import Storage from './Storage';
 import Skier from './Skier';
+import _ from 'lodash';
 
 export default class Game {
-    constructor() {
+    constructor(width, height) {
         this.ctx = null;
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        this.width = width;
+        this.height = height;
         this.obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
         this.obstacles = [];
         this.loadedAssets = { images: {}, audio: {} };
@@ -25,9 +26,9 @@ export default class Game {
 
     onReset() {
         this.reset();
-        EventManager.fire(Event.RESET_SKIER);
-        // EventManager.fire(Event.RESET_RHINO);
-        EventManager.fire(Event.RESET_STORAGE);
+        EventManager.dispatch(Event.RESET_SKIER);
+        // EventManager.dispatch(Event.RESET_RHINO);
+        EventManager.dispatch(Event.RESET_STORAGE);
     }
 
     onShowMenu() {
@@ -47,7 +48,7 @@ export default class Game {
     }
 
     onMenuPlay() {
-        EventManager.fire(Event.RESET_GAME);
+        EventManager.dispatch(Event.RESET_GAME);
         $('.game-ui').hide();
         $('canvas').remove();
         $('.canvas-container').show();
@@ -58,7 +59,7 @@ export default class Game {
 
         this.createContext(canvas);
 
-        EventManager.fire(Event.GAME_READY);
+        EventManager.dispatch(Event.GAME_READY);
     }
 
     onReady() {
@@ -66,13 +67,13 @@ export default class Game {
         var that = this;
         AssetManager.loadAssets().then(function () {
             that.loadedAssets = AssetManager.loadedAssets;
-            EventManager.fire(Event.GAME_STARTED);
+            EventManager.dispatch(Event.GAME_STARTED);
         });
     }
 
     onStart() {
         this.placeInitialObstacles();
-        EventManager.fire(Event.START_GAMELOOP);
+        EventManager.dispatch(Event.START_GAMELOOP);
     }
 
     saveGame() {
@@ -84,7 +85,7 @@ export default class Game {
 
     onPaused() {
         this.state.paused = true;
-        EventManager.fire(Event.STOP_GAMELOOP);
+        EventManager.dispatch(Event.STOP_GAMELOOP);
         // show menu
         $('.canvas-container, .game-start-menu, .game-over-screen').hide();
         $('.game-ui, .game-pause-menu').show();
@@ -102,29 +103,29 @@ export default class Game {
             if (timeLeft == 0) {
                 clearInterval(timer);
                 $('.timer').hide();
-                EventManager.fire(Event.START_GAMELOOP);
+                EventManager.dispatch(Event.START_GAMELOOP);
             }
             timeLeft--;
         }, 1000);
     }
 
     onGameOver() {
-        EventManager.fire(Event.STOP_GAMELOOP);
+        EventManager.dispatch(Event.STOP_GAMELOOP);
         this.saveGame();
         $('canvas').remove();
         $('#score').html(this.score + " metres");
         $('.game-start-menu, .game-pause-menu').hide();
         $('.game-ui, .game-over-screen').show();
-        EventManager.fire(Event.RESET_GAME);
+        EventManager.dispatch(Event.RESET_GAME);
     }
 
     onQuit() {
-        EventManager.fire(Event.STOP_GAMELOOP);
+        EventManager.dispatch(Event.STOP_GAMELOOP);
         this.saveGame();
         $('canvas').remove();
         $('.game-pause-menu, .game-over-screen, .canvas-container').hide();
         $('.game-start-menu').show();
-        EventManager.fire(Event.RESET_GAME);
+        EventManager.dispatch(Event.RESET_GAME);
     }
 
     /**
@@ -171,7 +172,6 @@ export default class Game {
             this.placeRandomObstacle(minX, maxX, minY, maxY);
         }
 
-        // console.log(loadedAssets.images)
         var that = this;
         this.obstacles = _.sortBy(this.obstacles, function (obstacle) {
             var obstacleImage = that.loadedAssets.images[obstacle.type];

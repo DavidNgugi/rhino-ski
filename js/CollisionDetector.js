@@ -1,6 +1,7 @@
 import utils from './utils';
 import EventManager from './EventManager';
 import Event from './Event';
+import _ from 'lodash';
 
 export default {
     obstacles: {
@@ -19,6 +20,7 @@ export default {
      * @return void
     */
     checkIfSkierHitObstacle: function(Game, player) {
+       
         var playerRect = utils.getCollisionRect(Game, player);
 
             // filter to nearby obstacles and keep in memory to reduce CPU calc
@@ -35,29 +37,33 @@ export default {
 
             // console.log(this.nearbyObstacles);
 
-            var that = this;
+            // var that = this;
 
             // iterate and check for collisions
             var collision = _.find(Game.obstacles, function(obstacle) {
+                
                 var obstacleImage = Game.loadedAssets.images[obstacle.type];
+                
                 var obstacleRect = {
                     left: obstacle.x,
                     right: obstacle.x + obstacleImage.width,
                     top: obstacle.y + obstacleImage.height - 5,
                     bottom: obstacle.y + obstacleImage.height
                 };
-
-                return that.intersectRect(playerRect, obstacleRect);
+                
+                // console.log(utils.math.intersectRect(playerRect, obstacleRect))
+               
+                return utils.math.intersectRect(playerRect, obstacleRect);
             });
 
             if(collision) {
                 player.direction = 0;
                 player.isMoving = false;
                 player.hasCollided = true;
-                EventManager.fire(Event.GAME_OVER);
+                EventManager.dispatch(Event.GAME_OVER);
             }else{
-                if(player.isMoving) { 
-                    Game.score += 0.5;
+                if(player.isMoving) {
+                    EventManager.dispatch(Event.ADD_SCORE);
                 }
             }
     },
@@ -70,12 +76,12 @@ export default {
 
         var that = this;
 
-        var ramps = _.filter(obstacles, function(obstacle){
+        var ramps = _.filter(Game.obstacles, function(obstacle){
             return obstacle.type === 'ramp';
         });
 
         var collision = _.find(ramps, function(ramp) {
-            var obstacleImage = Game.loadedAssets[ramp.type];
+            var obstacleImage = Game.loadedAssets.images[ramp.type];
             var obstacleRect = {
                 left: ramp.x,
                 right: ramp.x + obstacleImage.width,
@@ -87,7 +93,7 @@ export default {
         });
 
         if(collision) {
-            EventManager.fire(Event.FOUND_RAMP);
+            EventManager.dispatch(Event.FOUND_RAMP);
         }else{
             if(player.isMoving) { 
                 Game.score += 0.5;
@@ -105,10 +111,5 @@ export default {
         return this.intersectRect(playerRect, rhinoRect);
     },
 
-    intersectRect: function(r1, r2) {
-        return !(r2.left > r1.right ||
-            r2.right < r1.left ||
-            r2.top > r1.bottom ||
-            r2.bottom < r1.top);
-    }
+    
 }

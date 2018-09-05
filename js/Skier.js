@@ -29,6 +29,17 @@ export default {
         this.hasCollided = false;
     },
 
+    getData: function(){
+        return {
+            x: this.mapX,
+            y: this.mapY,
+            direction: this.direction,
+            speed: this.speed,
+            isMoving: this.isMoving,
+            hasCollided: this.hasCollided
+        }
+    },
+
     /**
      * Moves the skier according to the direction and places new objects on the map
      * @return void
@@ -86,6 +97,16 @@ export default {
         this.direction = 3;
         this.mapY += this.speed;
     },
+    
+    onMoveUp: function(){
+        // prevent moving backwards and ensuring speed is maintained
+        if(this.speed > 1){
+            this.speed -= 0.5;
+            this.isMoving = false;
+            this.mapY += this.speed;
+        }
+    },
+
 
     onJump: function(){
         
