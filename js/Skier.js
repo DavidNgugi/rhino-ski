@@ -3,7 +3,7 @@ import utils from './utils';
 /**
  * The player component
  */
-var Skier = {
+export default {
     direction: 5,
     mapX: 0,
     mapY: 0,
@@ -12,7 +12,7 @@ var Skier = {
     hasCollided: false,
     assets: ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight'],
 
-    getAsset(){
+    getAsset: function(){
         return this.assets[this.direction];
     },
 
@@ -88,9 +88,7 @@ var Skier = {
     },
 
     onJump: function(){
-
+        
     },
 
 };
-
-module.exports = Skier;

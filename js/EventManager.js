@@ -13,15 +13,20 @@ export default {
      * @returns void
      */
     on: function(event, handler, target) {
+        /**
+         * Apparently I can't get the callee.caller because of webpack's strict mode
+        */
+
         // if (!target) {
         //     target = arguments.callee.caller;
         // }
         // check if event already exists
         if (!this.registeredEventListeners[event]) {
             this.registeredEventListeners[event] = [];
+            //register event
+            this.registeredEventListeners[event].push({handler: handler, target: target});
         }
-        //register event
-        this.registeredEventListeners[event].push({handler: handler, target: target});
+        
     },
 
     /**
@@ -32,7 +37,7 @@ export default {
         try{
             // get all listeners for that event
             var listeners = this.getListeners(event);
-            console.log('Event: '+event);
+            // console.log('Event: '+event);
             // lop through and call them **
             for(var i = 0; i < listeners.length; i++){
                 var listener = listeners[i].target;
@@ -41,7 +46,8 @@ export default {
                 // this.firedEvents[event].push({handler: listeners[i].handler, target: listeners[i].target});
             }
         }catch(e){
-            console.log("Event not fired. "+ e);
+            // console.log("Event not fired. "+ e);
+            throw new Error("Event not fired");
         }
     },
 

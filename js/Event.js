@@ -15,6 +15,8 @@ export default {
     RESET_SKIER     : 'RESET_SKIER',
     RESET_RHINO     : 'RESET_RHINO',
     RESET_STORAGE   : 'RESET_STORAGE',
+    FOUND_RAMP      : 'FOUND_RAMP',
+    PLAYER_JUMP     : 'PLAYER_JUMP',
     KEY_LEFT        : 'KEY_LEFT',
     KEY_RIGHT       : 'KEY_RIGHT',
     KEY_DOWN        : 'KEY_DOWN',
