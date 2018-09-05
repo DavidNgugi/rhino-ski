@@ -6,9 +6,9 @@
     "scripts": {
         "watch": "webpack --mode production",
         "watch:dev": "webpack --mode development --watch",
-        "start": "node web.js",
+        "start": "npm run build & node web.js",
         "develop": "npm run watch:dev & node web.js",
-        "build": "webpack --config webpack.config.js",
+        "build": "webpack --mode production",
         "test": "mocha-webpack --glob '*.test.js' test"
     },
     "author": "dan.wash@ceros.com",
