@@ -7,6 +7,9 @@ export default {
     // highscore stuff
     highscore: {
         set: function(value){
+            if(!value){
+                throw new Error("Value cannot be empty");
+            }
             var highscore = this.get();
             if(highscore == null){
                 highscore = [];
@@ -24,7 +27,10 @@ export default {
             utils.removeItem('ceros_game_data');
         },
         set: function(data){
-            utils.setItem('ceros_game_data)', JSON.stringify(data));
+            if(!data){
+                throw new Error("Data cannot be empty");
+            }
+            utils.setItem('ceros_game_data', JSON.stringify(data));
         },
         get: function(){
             return utils.toJson(utils.getItem('ceros_game_data'));

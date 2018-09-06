@@ -8,22 +8,22 @@ export default {
     },
 
     setItem: function(key, value){
-        if (window && window.localStorage || window.sessionStorage) {
-            window.sessionStorage.setItem(key, value) || window.localStorage.setItem(key, value);
+        if (window && window.localStorage ) {
+            window.localStorage.setItem(key, value);
         }
     },
     
     getItem: function(key) {
         var data = null;
-        if (window && window.localStorage || window.sessionStorage) {
-            data = window.sessionStorage.getItem(key) || window.localStorage.getItem(key);
+        if (window && window.localStorage) {
+            data = window.localStorage.getItem(key);
         }
         return data;
     },
 
     removeItem: function(key){
-        if (window && window.localStorage || window.sessionStorage) {
-            window.sessionStorage.removeItem(key) || window.localStorage.removeItem(key);
+        if (window && window.localStorage) {
+            window.localStorage.removeItem(key);
         }
     },
 
@@ -42,7 +42,6 @@ export default {
             top: gameObj.mapY + gameObjImage.height - 5 + game.height / 2,
             bottom: gameObj.mapY + gameObjImage.height + game.height / 2
         };
-
         return collisionRect;
     },
     

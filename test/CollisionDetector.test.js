@@ -6,7 +6,7 @@ import Skier from '../js/Skier';
 
 var assert = require('assert');
 
-const game = new Game(500, 500);
+const game = new Game(1940, 960);
 
 describe('Collision Detector', () => {
 
@@ -39,7 +39,7 @@ describe('Collision Detector', () => {
         game.loadedAssets.images['rock2'] = rock2;
         
         game.obstacles = [
-            { type: 'tree', x: 100, y: 108 },  
+            { type: 'tree', x: 100, y: 108 },
             { type: 'treeCluster', x: 120, y: 150 }
         ];
 
@@ -74,9 +74,7 @@ describe('Collision Detector', () => {
     //         done();
     //     });
 
-    //     // it("Should fire GAME_OVER event", (done) => {
-    //     //     assert.equal();
-    //     // });
+    //     it("Should fire GAME_OVER event");
     // });
 
     // describe("When player doesn't hit obstacle", () => {

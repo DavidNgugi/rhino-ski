@@ -30,7 +30,9 @@ export default {
             'rock1'                 : 'img/rock_1.png',
             'rock2'                 : 'img/rock_2.png'
         },
-        audio: {}
+        audio: {
+            'WildWaters'             : 'sound/WildWaters.mp3'
+        }
     },
 
     obstacles:  {
@@ -50,6 +52,7 @@ export default {
      * @return string
      */
     getImageAsset: function(name){
+        if(!name) { throw new Error("No value for name has been given") }
         return this.assets.images[name];
     },
 
@@ -58,6 +61,7 @@ export default {
      * @return string
      */
     getAudioAsset: function(name){
+        if(!name) { throw new Error("No value for name has been given") }
         return this.assets.audio[name];
     },
 
@@ -110,5 +114,38 @@ export default {
             });
         }
         return $.when.apply($, assetPromises);
+    },
+
+    asyncLoadAssets: function() {
+
+        var context = this;
+
+        // load images
+         _.each(this.assets.images, function(asset, assetName) {
+
+            var assetImage = new Image();
+            assetImage.width /= 2;
+            assetImage.height /= 2;
+            assetImage.src = asset;
+            context.loadedAssets.images[assetName] = assetImage;
+        });
+
+        if(Object.keys(this.assets.audio).length > 0){
+            // load the audio too
+             _.each(this.assets.audio, function(asset, assetName) {
+                context.loadedAssets.audio[assetName] = asset;
+            });
+        }
+
+        return new Promise( (resolve, reject) => {
+            if(Object.keys(this.loadedAssets.images).length > 0 && Object.keys(this.loadedAssets.audio).length > 0){
+                resolve('Assets loaded');
+            }else{
+                reject(Error('Assets not loaded'));
+            }
+        });
     }
+
+
+
 }
