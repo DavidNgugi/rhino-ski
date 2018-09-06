@@ -4,6 +4,7 @@ import AssetManager from './AssetManager';
 import Storage from './Storage';
 import Skier from './Skier';
 import _ from 'lodash';
+import {Howl, Howler} from 'howler';
 
 export default class Game {
     constructor(width, height) {
@@ -15,6 +16,7 @@ export default class Game {
         this.loadedAssets = { images: {}, audio: {} };
         this.score = 0;
         this.state = { 'started': false, 'paused': false, 'resumed': false, 'gameOver': false };
+        this.sound = null;
     }
 
     reset() {
@@ -66,12 +68,19 @@ export default class Game {
         // Load assets and start the game
         var that = this;
         AssetManager.loadAssets().then(function () {
-            that.loadedAssets = AssetManager.loadedAssets;
+            that.loadedAssets = AssetManager.loadedAssets;           
             EventManager.dispatch(Event.GAME_STARTED);
         });
     }
 
     onStart() {
+        this.sound = new Howl({
+            loop: true,
+            src: [this.loadedAssets.audio['WildWaters']]
+        });
+        this.sound.play();
+        // Change global volume.
+        Howler.volume(2.0);
         this.placeInitialObstacles();
         EventManager.dispatch(Event.START_GAMELOOP);
     }
@@ -85,6 +94,7 @@ export default class Game {
 
     onPaused() {
         this.state.paused = true;
+        this.sound.pause();
         EventManager.dispatch(Event.STOP_GAMELOOP);
         // show menu
         $('.canvas-container, .game-start-menu, .game-over-screen').hide();
@@ -95,7 +105,7 @@ export default class Game {
         $('.game-ui').hide();
         $('.canvas-container').show();
         this.state.paused = false;
-
+        this.sound.play();
         var timeLeft = 3;
         var timer = setInterval(() => {
             $('.timer').show();
@@ -110,6 +120,7 @@ export default class Game {
     }
 
     onGameOver() {
+        this.sound.stop();
         EventManager.dispatch(Event.STOP_GAMELOOP);
         this.saveGame();
         $('canvas').remove();

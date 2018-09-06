@@ -44,7 +44,7 @@ export default {
                 var listener = listeners[i].target;
                 // console.log("calling " + listeners[i].handler);
                 listeners[i].handler.call(listener);
-                // this.firedEvents[event].push({handler: listeners[i].handler, target: listeners[i].target});
+                this.firedEvents.push({event: event, handler: listeners[i].handler, target: listeners[i].target});
             }
         }catch(e){
             // console.log("Event not fired. "+ e);

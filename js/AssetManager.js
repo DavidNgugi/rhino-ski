@@ -96,19 +96,14 @@ export default {
             assetPromises.push(assetDeferred.promise());
         });
 
-        if(this.assets.audio.length > 0){
+        if(Object.keys(this.assets.audio).length > 0){
             // load the audio too
              _.each(this.assets.audio, function(asset, assetName) {
 
-                var assetAudio = new Audio();
                 var assetDeferred = new $.Deferred();
-
-                var that = context;
-                assetAudio.onload = function() {
-                    that.loadedAssets.audio[assetName] = assetAudio;
-                    assetDeferred.resolve();
-                };
-                assetAudio.src = asset;
+                context.loadedAssets.audio[assetName] = asset;
+                assetDeferred.resolve();
+                
                 loaded++;
                 assetPromises.push(assetDeferred.promise());
             });
