@@ -12,11 +12,12 @@ export default {
             'rock2'
         ]
     },
-    // keep in memory nearby obstacles
     nearbyObstacles: [],
+
     /**
      * Checks for collisions between the skier and obstacles
-     * @param {Object} skier
+     * @param {Game} Game game instance
+     * @param {Object} skier skier object
      * @return void
     */
     checkIfSkierHitObstacle: function(Game, player) {
@@ -70,6 +71,9 @@ export default {
 
     /**
      * Check if got to ramp so player can jump or fall
+     * @param {Game} Game game instance
+     * @param {Object} skier skier object
+     * @return void
      */
     checkIfSkierHitJumpRamp: function(Game, player){
         var playerRect = utils.getCollisionRect(Game, player);
@@ -96,19 +100,27 @@ export default {
             EventManager.dispatch(Event.FOUND_RAMP);
         }else{
             if(player.isMoving) { 
-                Game.score += 0.5;
+                EventManager.dispatch(Event.ADD_SCORE);
             }
         }
     },
 
     /**
-     * 
+     * Check if captured by rhino
+     * @param {Game} Game game instance
+     * @param {Skier} skier skier object
+     * @param {Rhino} rhino rhino object
+     * @return void
      */
     checkIfSkierCapturedByEnemy: function(Game, player, rhino){
         var playerRect = utils.getCollisionRect(Game, player);
         var rhinoRect = utils.getCollisionRect(Game, rhino);
 
-        return this.intersectRect(playerRect, rhinoRect);
+        var collision = this.intersectRect(playerRect, rhinoRect);
+
+        if(collision) {
+            EventManager.dispatch(Event.GAME_OVER);
+        }
     },
 
     

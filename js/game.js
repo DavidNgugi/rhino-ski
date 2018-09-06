@@ -4,7 +4,7 @@ import AssetManager from './AssetManager';
 import Storage from './Storage';
 import Skier from './Skier';
 import _ from 'lodash';
-import {Howl, Howler} from 'howler';
+import { Howl, Howler } from 'howler';
 
 export default class Game {
     constructor(width, height) {
@@ -17,13 +17,16 @@ export default class Game {
         this.score = 0;
         this.state = { 'started': false, 'paused': false, 'resumed': false, 'gameOver': false };
         this.sound = null;
+        this.startTime = new Date();
     }
 
     reset() {
         this.loadedAssets = { images: {}, audio: {} };
-        this.obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
+        this.state = { 'started': false, 'paused': false, 'resumed': false, 'gameOver': false };
         this.obstacles = [];
         this.score = 0;
+        this.sound = null;
+        this.startTime = new Date();
     }
 
     onReset() {
@@ -54,7 +57,7 @@ export default class Game {
         $('.game-ui').hide();
         $('canvas').remove();
         $('.canvas-container').show();
-        // show game menu
+
         var canvas = this.createCanvas();
 
         $('body .canvas-container').append(canvas);
@@ -65,30 +68,28 @@ export default class Game {
     }
 
     onReady() {
-        // Load assets and start the game
         var that = this;
         AssetManager.loadAssets().then(function () {
-            that.loadedAssets = AssetManager.loadedAssets;           
+            that.loadedAssets = AssetManager.loadedAssets;
+            that.sound = new Howl({
+                loop: true,
+                src: [that.loadedAssets.audio['WildWaters']]
+            });
+    
             EventManager.dispatch(Event.GAME_STARTED);
         });
     }
 
     onStart() {
-        this.sound = new Howl({
-            loop: true,
-            src: [this.loadedAssets.audio['WildWaters']]
-        });
         this.sound.play();
-        // Change global volume.
         Howler.volume(2.0);
+
         this.placeInitialObstacles();
         EventManager.dispatch(Event.START_GAMELOOP);
     }
 
     saveGame() {
-        // save game to localStorage
         Storage.highscore.set(Math.round(this.score));
-        // store game state
         Storage.game.set({ 'game': Game, 'skier': Skier });
     }
 
@@ -124,7 +125,7 @@ export default class Game {
         EventManager.dispatch(Event.STOP_GAMELOOP);
         this.saveGame();
         $('canvas').remove();
-        $('#score').html(this.score + " metres");
+        $('#score').html(Math.round(this.score) + " metres");
         $('.game-start-menu, .game-pause-menu').hide();
         $('.game-ui, .game-over-screen').show();
         EventManager.dispatch(Event.RESET_GAME);
@@ -137,6 +138,21 @@ export default class Game {
         $('.game-pause-menu, .game-over-screen, .canvas-container').hide();
         $('.game-start-menu').show();
         EventManager.dispatch(Event.RESET_GAME);
+    }
+
+    /**
+     * Updates the speed as time elapsed increases
+     * @param {Skier} skier 
+     */
+    updateSpeed(skier){
+        var endTime = new Date(), speedThrottle = 1000
+        var timeDiff = endTime - this.startTime; //in ms
+        // get in seconds
+        timeDiff /= 1000;
+        speedThrottle  = (timeDiff > 20) ? 10000 : 5000;
+        skier.speed += timeDiff/speedThrottle;
+
+        // console.log("Time Diff: "+timeDiff + "\n Speed: "+skier.speed);
     }
 
     /**
@@ -228,7 +244,7 @@ export default class Game {
      * @param {int} minX 
      * @param {int} maxX 
      * @param {int} minY 
-     * @param {itn} maxY 
+     * @param {int} maxY 
      * @return void
      */
     placeRandomObstacle(minX, maxX, minY, maxY) {
@@ -245,8 +261,7 @@ export default class Game {
 
     /**
      * Place a single obstacle based on skier direction of movement
-     * Endless snow with obstacles illusion
-     * @param {Object} skier
+     * @param {Object} skier - skier object
      * @return void
      */
     placeNewObstacle(skier) {
@@ -285,11 +300,6 @@ export default class Game {
         }
     }
 
-    /**
-     * Draws obstacles
-     * @param {Object} skier 
-     * @return void
-     */
     drawObstacles(skier) {
         var newObstacles = [];
 
@@ -311,7 +321,6 @@ export default class Game {
         this.obstacles = newObstacles;
     }
 
-    // draw Player Object 
     drawGameObject(skier) {
         var skierAssetName = skier.getAsset();
         var skierImage = this.loadedAssets.images[skierAssetName];

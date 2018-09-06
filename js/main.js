@@ -37,57 +37,41 @@ $(document).ready(function () {
         game.score += 0.5;
     };
 
-    var foundRamp = function () {
+    var foundRamp = function () {}
 
-    }
-
-    /**
-     * GameLoop
-     */
     var gameLoop = function () {
-        // save ctx
         game.ctx.save();
 
         // Retina support
         game.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-        // clear the canvas
         game.clearCanvas();
 
-        // draw relevant stuff
         Skier.move();
 
         game.placeNewObstacle(Skier);
 
         game.drawPauseText();
 
-        // draw highscore
         game.drawHighScore();
 
-        // draw Skier
         game.drawGameObject(Skier);
-
-        // drawGameObject(Rhino);
 
         game.drawObstacles(Skier);
 
-        // check for collisions
-        CollisionDetector.checkIfSkierHitObstacle(game, Skier);
+        // CollisionDetector.checkIfSkierHitObstacle(game, Skier);
 
         // CollisionDetector.checkIfSkierCapturedByEnemy(game, Skier, Rhino);
 
-        // restore ctx
+        game.updateSpeed(Skier);
+
         game.ctx.restore();
 
-        // update game
         if (animFrame != null && !game.state.paused) {
             animFrame = requestAnimationFrame(gameLoop);
         }
     };
 
-    /**
-     * Game Event Listeners registration
-     */
     var registerEvents = function () {
         EventManager.on(Event.RESET_GAME, game.onReset, game);
         EventManager.on(Event.RESET_SKIER, Skier.reset, Skier);
@@ -116,26 +100,19 @@ $(document).ready(function () {
         EventManager.on(Event.KEY_UP, Skier.onMoveUp, Skier);
     };
 
-    /**
-     *  DOM Event listeners
-    */
-    // Play/New Game
     $('.play').on('click', function (e) {
         EventManager.dispatch(Event.MENU_PLAY);
     });
 
-    // Resume Game
     $('#resume').on('click', function (e) {
         EventManager.dispatch(Event.GAME_RESUMED);
     });
 
-    // Pause Game
     $('.pause').on('click', function (e) {
         e.preventDefault();
         EventManager.dispatch(Event.GAME_PAUSED);
     });
 
-    // Quit game
     $("#quit").on('click', function (e) {
         EventManager.dispatch(Event.GAME_QUIT);
     });
@@ -162,7 +139,6 @@ $(document).ready(function () {
 
     /**
      * Checks for keyboard onKeyDown events
-     * @param {int} update 
      * @return void
      */
     var setupKeyHandler = function () {
@@ -187,12 +163,12 @@ $(document).ready(function () {
                 case 40: // down
                     EventManager.dispatch(Event.KEY_DOWN);
                     break;
-                case 80:
+                case 80: // P
                     if (!game.state.pause) {
                         EventManager.dispatch(Event.GAME_PAUSED);
                     }
                     break;
-                case 32:
+                case 32: // space
                     EventManager.dispatch(Event.PLAYER_JUMP);
                     break;
             }

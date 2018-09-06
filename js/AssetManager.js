@@ -1,6 +1,6 @@
 import $ from 'jquery';
 /**
- * Stores the path to all game assets
+ * Stores the path to all game assets and loads assets
  */
 export default {
     assets: {
@@ -72,10 +72,6 @@ export default {
     loadAssets: function() {
         var assetPromises = [];
 
-        var count = this.assets.images.length + this.assets.audio.length;
-
-        var loaded = 0;
-
         var context = this;
 
         // load images
@@ -92,19 +88,18 @@ export default {
                 assetDeferred.resolve();
             };
             assetImage.src = asset;
-            loaded++;
             assetPromises.push(assetDeferred.promise());
         });
 
+        // load the audio too
         if(Object.keys(this.assets.audio).length > 0){
-            // load the audio too
+            
              _.each(this.assets.audio, function(asset, assetName) {
 
                 var assetDeferred = new $.Deferred();
                 context.loadedAssets.audio[assetName] = asset;
                 assetDeferred.resolve();
                 
-                loaded++;
                 assetPromises.push(assetDeferred.promise());
             });
         }

@@ -48,7 +48,7 @@ export default {
             }
         }catch(e){
             // console.log("Event not fired. "+ e);
-            throw new Error("Event not dispatched");
+            throw new Error("Event not dispatched. "+ e);
         }
     },
 
