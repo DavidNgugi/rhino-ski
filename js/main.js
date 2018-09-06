@@ -59,7 +59,7 @@ $(document).ready(function () {
 
         game.drawObstacles(Skier);
 
-        // CollisionDetector.checkIfSkierHitObstacle(game, Skier);
+        CollisionDetector.checkIfSkierHitObstacle(game, Skier);
 
         // CollisionDetector.checkIfSkierCapturedByEnemy(game, Skier, Rhino);
 
