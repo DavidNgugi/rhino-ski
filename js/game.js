@@ -324,15 +324,11 @@ export default class Game {
         this.ctx.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
     }
 
-    drawHighScore() {
+    drawInfo() {
+        this.ctx.textAlignment = "right";
         this.ctx.font = "30px Arial";
         this.ctx.fillStyle = "#0095DD";
         this.ctx.fillText("Score: " + Math.round(this.score) + " metres", 10, 35);
-    }
-
-    drawInstructionsText() {
-        this.ctx.textAlignment = "right";
-        this.ctx.font = "30px Arial";
         this.ctx.fillStyle = "#07903B";
         this.ctx.fillText("Press P to pause", 500, 35);
         this.ctx.fillStyle = "#AA2666";

@@ -55,9 +55,7 @@ $(document).ready(function () {
 
         game.placeNewObstacle(Skier);
 
-        game.drawInstructionsText();
-
-        game.drawHighScore();
+        game.drawInfo();
 
         game.drawGameObject(Skier);
 
