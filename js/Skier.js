@@ -9,6 +9,7 @@ export default {
     mapY: 0,
     speed: 8,
     isMoving: false,
+    isJumping: false,
     hasCollided: false,
     assets: [
         'skierCrash', 
@@ -60,27 +61,25 @@ export default {
      * @return void
      */
     move: function() {
-        // if(this.isJumping === false){
-            var dt = 1;
+        var dt = 1;
 
-            if(this.direction == 6 || this.direction == 7 || this.direction == 8 || this.direction == 9 || this.direction == 10){
+        if(this.direction == 6 || this.direction == 7 || this.direction == 8 || this.direction == 9 || this.direction == 10){
+            this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed), dt);
+        }
+
+        switch(this.direction) {
+            case 2:
+                this.mapX = utils.math.lerp(this.mapX, (this.mapX - Math.round(this.speed / 1.4142)), dt);
+                this.mapY = utils.math.lerp(this.mapY, (this.mapY + Math.round(this.speed / 1.4142)), dt);
+                break;
+            case 3:
                 this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed), dt);
-            }
-
-            switch(this.direction) {
-                case 2:
-                    this.mapX = utils.math.lerp(this.mapX, (this.mapX - Math.round(this.speed / 1.4142)), dt);
-                    this.mapY = utils.math.lerp(this.mapY, (this.mapY + Math.round(this.speed / 1.4142)), dt);
-                    break;
-                case 3:
-                    this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed), dt);
-                    break;
-                case 4:
-                    this.mapX = utils.math.lerp(this.mapX, (this.mapX + this.speed / 1.4142), dt);
-                    this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed / 1.4142), dt);
-                    break;
-            }
-        // }
+                break;
+            case 4:
+                this.mapX = utils.math.lerp(this.mapX, (this.mapX + this.speed / 1.4142), dt);
+                this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed / 1.4142), dt);
+                break;
+        }
     },
 
     onMoveLeft: function(){
@@ -118,41 +117,26 @@ export default {
         this.direction = 3;
         this.mapY += this.speed;
     },
-    
-    onMoveUp: function(){
-        // prevent moving backwards and ensuring speed is maintained
-        if(this.speed > 1){
-            this.speed -= 0.5;
-            this.isMoving = false;
-            this.mapY += this.speed;
-        }
-    },
 
     onJump: function(){
         this.isJumping = true;
-        // this.isMoving = false;
         var len = this.animSequence.length, 
             last = this.animSequence[len-1],
             i = 6,
             duration = 1000/ len;
         
-
         var intVal = setInterval( () => {
             if(i < last){
-                console.log("We be jumping ... \n direction: " + this.direction);
+                console.log("We be jumping ...");
                 this.direction = i;
-                
             }else{
                 console.log("\n Finished jump animation!!");
                 clearInterval(intVal);
                 this.isJumping = false;
-                // this.isMoving = false;
                 this.direction = 3;
             }
             i++;
         }, duration);
-
-        console.log("isJumping: "+this.isJumping);
     }
 
 };

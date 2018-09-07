@@ -330,11 +330,13 @@ export default class Game {
         this.ctx.fillText("Score: " + Math.round(this.score) + " metres", 10, 35);
     }
 
-    drawPauseText() {
+    drawInstructionsText() {
         this.ctx.textAlignment = "right";
         this.ctx.font = "30px Arial";
-        this.ctx.fillStyle = "#B30D5D";
+        this.ctx.fillStyle = "#07903B";
         this.ctx.fillText("Press P to pause", 500, 35);
+        this.ctx.fillStyle = "#AA2666";
+        this.ctx.fillText("Press SPACE to jump rocks", 500, 70);
     }
 
 };

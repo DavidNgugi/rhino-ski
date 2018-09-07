@@ -2,6 +2,8 @@ import Skier from '../js/Skier';
 
 var assert = require('assert');
 
+var expect = require("chai").expect;
+
 describe('Skier', () => {
 
     describe('onMoveLeft()', () => {
@@ -90,6 +92,54 @@ describe('Skier', () => {
             done();
         });
     });
-    
-  
+
+    describe('onJump()', () => {
+        before(() => {
+            Skier.reset();
+            Skier.isMoving = true;
+        });
+
+        it("Should set isJumping to false if animation is done", done => {
+            var len = Skier.animSequence.length,
+                last = Skier.animSequence[len - 1],
+                i = 6,
+                duration = 1000 / len;
+            
+            Skier.onJump();
+
+            var tOut = setTimeout(() => {
+                if (i > last) {
+                    expect(Skier.isJumping).to.be.false;
+                    clearTimeout(tOut);
+                }
+                i++;
+            }, duration);
+
+            done();
+        });
+
+        it("Should set direction to 3 (down) if animation is done", done => {
+            var len = Skier.animSequence.length,
+                last = Skier.animSequence[len - 1],
+                i = 6,
+                duration = 1000 / len;
+
+            Skier.direction = 2;
+            
+            Skier.onJump();
+
+            var tOut = setTimeout(() => {
+                if (i > last) {
+                    assert.equal(Skier.direction, 3);
+                    clearTimeout(tOut);
+                }
+                i++;
+            }, duration);
+
+            done();
+        });
+    })
+
+
+
 })
