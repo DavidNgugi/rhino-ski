@@ -75,16 +75,14 @@ export default class Game {
                 loop: true,
                 src: [that.loadedAssets.audio['WildWaters']]
             });
-    
             EventManager.dispatch(Event.GAME_STARTED);
         });
     }
 
     onStart() {
+        this.placeInitialObstacles();
         this.sound.play();
         Howler.volume(2.0);
-
-        this.placeInitialObstacles();
         EventManager.dispatch(Event.START_GAMELOOP);
     }
 

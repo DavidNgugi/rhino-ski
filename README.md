@@ -61,12 +61,12 @@ We are looking forward to see what you come up with!
 6. Added Music to game
 7. Added Highscore tracking and saving to LocalStorage
 8. Added Pause, Resume, Restart, Quit and Game Over functionality
-9. Tests
+9. Added Jump Tricks
+10. Tests
 
 ## FEATURES NOT ADDED/ COMPLETED
 
 1. The chasing by the Rhino
-2. Jump tricks
 
 ## BUGS FOUND
 
