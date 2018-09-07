@@ -65,7 +65,7 @@ export default {
             }else{
                 if(player.isMoving && !player.isJumping) {
                     EventManager.dispatch(Event.ADD_SCORE);
-                }else if(player.isMoving && player.isJumping){
+                }else if(player.isMoving && player.isJumping) {
                     EventManager.dispatch(Event.ADD_BONUS_SCORE);
                 }
             }
