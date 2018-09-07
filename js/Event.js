@@ -18,6 +18,7 @@ export default {
     FOUND_RAMP      : 'FOUND_RAMP',
     PLAYER_JUMP     : 'PLAYER_JUMP',
     ADD_SCORE       : 'ADD_SCORE',
+    ADD_BONUS_SCORE : 'ADD_BONUS_SCORE',
     KEY_LEFT        : 'KEY_LEFT',
     KEY_RIGHT       : 'KEY_RIGHT',
     KEY_DOWN        : 'KEY_DOWN',

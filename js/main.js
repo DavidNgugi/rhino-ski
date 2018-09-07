@@ -37,6 +37,10 @@ $(document).ready(function () {
         game.score += 0.5;
     };
 
+    var onAddBonusScore = function(){
+        game.score += 2;
+    };
+
     var foundRamp = function () {}
 
     var gameLoop = function () {
@@ -93,6 +97,7 @@ $(document).ready(function () {
         EventManager.on(Event.FOUND_RAMP, foundRamp, this);
         EventManager.on(Event.PLAYER_JUMP, Skier.onJump, Skier);
         EventManager.on(Event.ADD_SCORE, onAddScore, this);
+        EventManager.on(Event.ADD_BONUS_SCORE, onAddBonusScore, this);
 
         EventManager.on(Event.KEY_LEFT, Skier.onMoveLeft, Skier);
         EventManager.on(Event.KEY_RIGHT, Skier.onMoveRight, Skier);
