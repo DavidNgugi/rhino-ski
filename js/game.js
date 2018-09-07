@@ -122,7 +122,6 @@ export default class Game {
 
     onGameOver() {
         this.sound.stop();
-        EventManager.dispatch(Event.STOP_GAMELOOP);
         this.saveGame();
         $('canvas').remove();
         $('#score').html(Math.round(this.score) + " metres");
@@ -133,11 +132,10 @@ export default class Game {
 
     onQuit() {
         EventManager.dispatch(Event.STOP_GAMELOOP);
-        this.saveGame();
+        EventManager.dispatch(Event.RESET_GAME);
         $('canvas').remove();
         $('.game-pause-menu, .game-over-screen, .canvas-container').hide();
         $('.game-start-menu').show();
-        EventManager.dispatch(Event.RESET_GAME);
     }
 
     /**
@@ -151,8 +149,6 @@ export default class Game {
         timeDiff /= 1000;
         speedThrottle  = (timeDiff > 20) ? 10000 : 5000;
         skier.speed += timeDiff/speedThrottle;
-
-        // console.log("Time Diff: "+timeDiff + "\n Speed: "+skier.speed);
     }
 
     /**
@@ -294,9 +290,9 @@ export default class Game {
             case 5: // right
                 this.placeRandomObstacle(rightEdge, rightEdge + 50, topEdge, bottomEdge);
                 break;
-            case 6: // up
-                this.placeRandomObstacle(leftEdge, rightEdge, topEdge - 50, topEdge);
-                break;
+            // case 6: // up
+            //     this.placeRandomObstacle(leftEdge, rightEdge, topEdge - 50, topEdge);
+            //     break;
         }
     }
 

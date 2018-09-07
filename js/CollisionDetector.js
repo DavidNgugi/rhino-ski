@@ -54,7 +54,7 @@ export default {
                 
                 // console.log(utils.math.intersectRect(playerRect, obstacleRect))
                
-                return utils.math.intersectRect(playerRect, obstacleRect);
+                return ( (obstacle.type == 'rock1' || obstacle.type == 'rock2') && player.isJuming) ? false : utils.math.intersectRect(playerRect, obstacleRect);
             });
 
             if(collision) {
@@ -63,7 +63,7 @@ export default {
                 player.hasCollided = true;
                 EventManager.dispatch(Event.GAME_OVER);
             }else{
-                if(player.isMoving) {
+                if(player.isMoving &&) {
                     EventManager.dispatch(Event.ADD_SCORE);
                 }
             }

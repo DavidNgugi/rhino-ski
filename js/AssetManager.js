@@ -35,16 +35,6 @@ export default {
         }
     },
 
-    obstacles:  {
-        types: [
-            'tree',
-            'treeCluster',
-            'rock1',
-            'rock2',
-            'ramp'
-        ]
-    },
-
     loadedAssets: { images: {}, audio: {} },
 
     /**

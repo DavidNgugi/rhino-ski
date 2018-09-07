@@ -127,7 +127,6 @@ $(document).ready(function () {
     $('#highscore').on('click', function (e) {
         $('.game-start-menu').hide();
         var highscores = Storage.highscore.get();
-        console.log(highscores);
         if (highscores != undefined || highscores != null) {
             $('#highscores li').remove();
             highscores.sort(((a, b) => { return b - a; })).forEach((highscore) => {
@@ -169,7 +168,9 @@ $(document).ready(function () {
                     }
                     break;
                 case 32: // space
-                    EventManager.dispatch(Event.PLAYER_JUMP);
+                    if(Skier.direction == 3){
+                        EventManager.dispatch(Event.PLAYER_JUMP);
+                    }
                     break;
             }
         });

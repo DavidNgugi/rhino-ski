@@ -45,13 +45,6 @@ describe('Asset Manager', () => {
         
     });
 
-    describe('Obstacles', () => {
-        it("should have 5 types", done => {
-            assert.equal(Object.keys(AssetManager.obstacles.types).length, 5);
-            done();
-        });
-    })
-    
     describe('When loading assets', () => {
 
         before(async () => {
