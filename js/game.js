@@ -138,15 +138,15 @@ export default class Game {
 
     /**
      * Updates the speed as time elapsed increases
-     * @param {Skier} skier 
+     * @param {Object} gObject 
      */
-    updateSpeed(skier){
+    updateSpeed(gObject){
         var endTime = new Date(), speedThrottle = 1000
-        var timeDiff = endTime - this.startTime; //in ms
+        var timeDiff = endTime - this.startTime; //in ms`
         // get in seconds
         timeDiff /= 1000;
         speedThrottle  = (timeDiff > 20) ? 10000 : 5000;
-        skier.speed += timeDiff/speedThrottle;
+        gObject.speed += timeDiff/speedThrottle;
     }
 
     /**
@@ -315,13 +315,13 @@ export default class Game {
         this.obstacles = newObstacles;
     }
 
-    drawGameObject(skier) {
-        var skierAssetName = skier.getAsset();
-        var skierImage = this.loadedAssets.images[skierAssetName];
-        var x = (this.width - skierImage.width) / 2;
-        var y = (this.height - skierImage.height) / 2;
-
-        this.ctx.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
+    drawGameObject(gObject) {
+        var gObjectAssetName = gObject.getAsset();
+        var gObjectImage = this.loadedAssets.images[gObjectAssetName];
+        var x = (this.width - gObjectImage.width) / 2;
+        var y = (this.height - gObjectImage.height) / 2;
+        
+        this.ctx.drawImage(gObjectImage, x, y, gObjectImage.width, gObjectImage.height);
     }
 
     drawInfo() {

@@ -73,7 +73,7 @@ describe('Event Manager', () => {
 
         it("Should dispatch a Registered event", (done) => {
             var testEvent = 'TEST:EVENT',
-                handler = (e) => {result = true},
+                handler = (e) => { result = true },
                 result = false,
                 target = () => {};
 

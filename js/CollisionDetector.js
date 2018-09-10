@@ -118,9 +118,10 @@ export default {
         var playerRect = utils.getCollisionRect(Game, player);
         var rhinoRect = utils.getCollisionRect(Game, rhino);
 
-        var collision = this.intersectRect(playerRect, rhinoRect);
+        var collision = utils.math.intersectRect(playerRect, rhinoRect);
 
         if(collision) {
+            // rhino.animateEat();
             EventManager.dispatch(Event.GAME_OVER);
         }
     },

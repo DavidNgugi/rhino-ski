@@ -38,14 +38,15 @@ export default {
         try{
             // get all listeners for that event
             var listeners = this.getListeners(event);
-            // console.log('Event: '+event);
-            // lop through and call them **
-            for(var i = 0; i < listeners.length; i++){
-                var listener = listeners[i].target;
-                // console.log("calling " + listeners[i].handler);
-                listeners[i].handler.call(listener);
-                this.firedEvents.push({event: event, handler: listeners[i].handler, target: listeners[i].target});
-            }
+            if(!listeners || !listeners[0]) return
+            
+            var args = listeners.slice.call(arguments, 1);
+
+            var that = this;
+            listeners.slice().map(function(i){
+                i.handler.apply(i.target, args);
+                that.firedEvents.push({event: event, handler: i.handler, target: i.target});
+            });
         }catch(e){
             // console.log("Event not fired. "+ e);
             throw new Error("Event not dispatched. "+ e);

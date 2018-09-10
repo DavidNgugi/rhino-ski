@@ -53,11 +53,15 @@ $(document).ready(function () {
 
         Skier.move();
 
+        // Rhino.move(Skier);
+
         game.placeNewObstacle(Skier);
 
         game.drawInfo();
 
         game.drawGameObject(Skier);
+
+        // game.drawGameObject(Rhino);
 
         game.drawObstacles(Skier);
 
@@ -66,6 +70,8 @@ $(document).ready(function () {
         // CollisionDetector.checkIfSkierCapturedByEnemy(game, Skier, Rhino);
 
         game.updateSpeed(Skier);
+
+        // game.updateSpeed(Rhino);
 
         game.ctx.restore();
 

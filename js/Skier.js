@@ -68,14 +68,14 @@ export default {
         }
 
         switch(this.direction) {
-            case 2:
+            case 2: // left
                 this.mapX = utils.math.lerp(this.mapX, (this.mapX - Math.round(this.speed / 1.4142)), dt);
                 this.mapY = utils.math.lerp(this.mapY, (this.mapY + Math.round(this.speed / 1.4142)), dt);
                 break;
-            case 3:
+            case 3: //down
                 this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed), dt);
                 break;
-            case 4:
+            case 4: // right
                 this.mapX = utils.math.lerp(this.mapX, (this.mapX + this.speed / 1.4142), dt);
                 this.mapY = utils.math.lerp(this.mapY, (this.mapY + this.speed / 1.4142), dt);
                 break;
