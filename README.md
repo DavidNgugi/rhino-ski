@@ -2,7 +2,10 @@
 
 This is a version of the classic Windows game SkiFree. If
 you've never heard of SkiFree, Google has plenty of examples. Better yet, you can play this version here: 
-http://rhinoski.herokuapp.com/  
+http://rhinoskii.herokuapp.com/  
+
+![Game UI](https://gitlab.com/DavidNgugi/rhino-ski-test/blob/master/img/bg.png?raw=true)
+
 
 ## What I have added/changed
 
